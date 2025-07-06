@@ -1,22 +1,27 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Trust Me</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Trust Me</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="container">
-        <button id="trustBtn">Trust me</button>
-        <div id="surprise" class="hidden">
-            <img src="https://media.tenor.com/8vPE3WTkjtUAAAAd/ditto-dancing.gif" alt="Dancing Slime">
-           <audio id="music" loop>
-  <source src="https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1" type="audio/mpeg">
-</audio>
-
-        </div>
+  <div class="container">
+    <button id="trustBtn">Trust me</button>
+    <div id="loading" class="hidden">Verifying your trustworthiness...</div>
+    <div id="surprise" class="hidden">
+      <img
+        src="https://media.tenor.com/8vPE3WTkjtUAAAAd/ditto-dancing.gif"
+        alt="Dancing Slime"
+      />
+      <audio id="music" loop>
+        <source
+          src="https://cdn.jsdelivr.net/gh/anars/blank-audio@master/1-second-of-silence.mp3"
+          type="audio/mpeg"
+        />
+      </audio>
     </div>
-    <script src="script.js"></script>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
