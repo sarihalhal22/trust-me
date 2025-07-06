@@ -11,14 +11,12 @@ document.getElementById("trustBtn").addEventListener("click", function () {
     loading.classList.add("hidden");
     surprise.classList.remove("hidden");
 
-    // Change the source of audio to Rick Astley's Never Gonna Give You Up
-    music.src =
-      "https://cdn.jsdelivr.net/gh/iqasnimr/music-cdn@master/Rick_Astley_-_Never_Gonna_Give_You_Up.mp3";
-
-    music.play().catch((e) => {
-      console.log("Audio play blocked:", e);
+    // Play audio and catch any errors (most browsers require user interaction)
+    music.play().catch((error) => {
+      console.warn("Audio play prevented:", error);
     });
-  }, 2500); // fake loading delay
+  }, 2500);
 });
+
 
 
