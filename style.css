@@ -4,6 +4,13 @@ body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   text-align: center;
   padding-top: 100px;
+  margin: 0;
+}
+
+.container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 button {
@@ -57,5 +64,3 @@ button:hover {
     opacity: 1;
   }
 }
-
-
