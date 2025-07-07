@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rickroll Experience</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(45deg, #1a2a6c, #b21f1f, #1a2a6c);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            z-index: 2;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #ff00ff;
+        }
+        
+        h1 {
+            color: #fff;
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+            letter-spacing: 2px;
+        }
+        
+        .trust-button {
+            background: linear-gradient(45deg, #ff00cc, #3333ff);
+            color: white;
+            border: none;
+            padding: 25px 60px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin: 40px 0;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .trust-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(45deg, #ff00cc, #00ffff);
+        }
+        
+        .trust-button:active {
+            transform: scale(0.95);
+        }
+        
+        .trust-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+        }
+        
+        .trust-button:hover::after {
+            transform: translate(100%, 100%) rotate(45deg);
+        }
+        
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 8px solid rgba(255, 0, 255, 0.3);
+            border-top: 8px solid #00ffff;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            margin-bottom: 30px;
+        }
+        
+        .loading-text {
+            color: white;
+            font-size: 2.5rem;
+            text-align: center;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+        
+        .rickroll-content {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #000, #1a2a6c, #b21f1f);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 900;
+            overflow: hidden;
+        }
+        
+        .dancing-ricks {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            gap: 15px;
+        }
+        
+        .rick-gif {
+            width: 200px;
+            height: 200px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.7);
+            transition: all 0.3s ease;
+        }
+        
+        .rick-gif:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px #00ffff;
+            z-index: 10;
+        }
+        
+        .rick-gif img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .song-title {
+            position: absolute;
+            top: 50px;
+            color: white;
+            font-size: 4rem;
+            text-align: center;
+            text-shadow: 0 0 15px #ff00ff, 0 0 30px #00ffff;
+            animation: pulse 2s infinite;
+            z-index: 5;
+        }
+        
+        .lyrics {
+            position: absolute;
+            bottom: 50px;
+            color: #00ffff;
+            font-size: 2.5rem;
+            text-align: center;
+            text-shadow: 0 0 10px #ff00ff;
+            font-style: italic;
+            z-index: 5;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            background: rgba(255, 0, 0, 1);
+            transform: scale(1.1);
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            animation: fall linear forwards;
+            z-index: 1;
+        }
+        
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        footer {
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 30px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .trust-button { font-size: 1.8rem; padding: 20px 50px; }
+            .song-title { font-size: 2.5rem; }
+            .lyrics { font-size: 1.8rem; }
+            .rick-gif { width: 150px; height: 150px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Click The Button Below</h1>
+        <button class="trust-button">TRUST ME</button>
+    </div>
+    
+    <footer>Warning: You might get Rickrolled! 😄</footer>
+    
+    <div class="loading-screen">
+        <div class="loader"></div>
+        <div class="loading-text">Preparing the Rickroll...</div>
+    </div>
+    
+    <div class="rickroll-content">
+        <button class="close-btn"><i class="fas fa-times"></i></button>
+        <div class="song-title">Never Gonna Give You Up</div>
+        <div class="dancing-ricks">
+            <!-- GIFs will be added by JavaScript -->
+        </div>
+        <div class="lyrics">Never gonna let you down...</div>
+    </div>
+    
+    <audio id="rickroll-audio" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const button = document.querySelector('.trust-button');
+            const loadingScreen = document.querySelector('.loading-screen');
+            const rickrollContent = document.querySelector('.rickroll-content');
+            const audio = document.getElementById('rickroll-audio');
+            const dancingRicks = document.querySelector('.dancing-ricks');
+            const closeBtn = document.querySelector('.close-btn');
+            
+            // Rick Astley GIF URLs
+            const rickGifs = [
+                'https://media.giphy.com/media/Vuw9m5wXviFIQ/giphy.gif',
+                'https://media.giphy.com/media/3o7abGQa0aRJUurpII/giphy.gif',
+                'https://media.giphy.com/media/l0HlG8vJXW0X5yX4s/giphy.gif',
+                'https://media.giphy.com/media/3o7TKsQ8UQ4l4LhGz6/giphy.gif',
+                'https://media.giphy.com/media/l0HlSNOxJB95607Xa/giphy.gif',
+                'https://media.giphy.com/media/l0HlReI2XdsH2Xe7u/giphy.gif'
+            ];
+            
+            // Create multiple dancing Rick GIFs
+            function createDancingRicks() {
+                dancingRicks.innerHTML = '';
+                for (let i = 0; i < 12; i++) {
+                    const randomGif = rickGifs[Math.floor(Math.random() * rickGifs.length)];
+                    const gifDiv = document.createElement('div');
+                    gifDiv.className = 'rick-gif';
+                    gifDiv.innerHTML = `<img src="${randomGif}" alt="Dancing Rick Astley">`;
+                    dancingRicks.appendChild(gifDiv);
+                }
+            }
+            
+            button.addEventListener('click', function() {
+                // Hide the button and show loading screen
+                button.style.display = 'none';
+                loadingScreen.style.display = 'flex';
+                
+                // Create confetti effect
+                createConfetti();
+                
+                // After 1.5 seconds, show the Rickroll content
+                setTimeout(function() {
+                    loadingScreen.style.display = 'none';
+                    rickrollContent.style.display = 'flex';
+                    createDancingRicks();
+                    audio.play();
+                }, 1500);
+            });
+            
+            closeBtn.addEventListener('click', function() {
+                rickrollContent.style.display = 'none';
+                audio.pause();
+                audio.currentTime = 0;
+                button.style.display = 'block';
+            });
+            
+            function createConfetti() {
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+                
+                for (let i = 0; i < 150; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = Math.random() * 15 + 5 + 'px';
+                    confetti.style.height = confetti.style.width;
+                    confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                    
+                    document.body.appendChild(confetti);
+                    
+                    // Remove confetti after animation completes
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
