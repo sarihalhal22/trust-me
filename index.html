@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trust Me Button</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            z-index: 2;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #ff00ff;
+        }
+        
+        h1 {
+            color: #fff;
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+            letter-spacing: 2px;
+        }
+        
+        .trust-button {
+            background: linear-gradient(45deg, #ff00cc, #3333ff);
+            color: white;
+            border: none;
+            padding: 25px 60px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin: 40px 0;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .trust-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(45deg, #ff00cc, #00ffff);
+        }
+        
+        .trust-button:active {
+            transform: scale(0.95);
+        }
+        
+        .trust-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+        }
+        
+        .trust-button:hover::after {
+            transform: translate(100%, 100%) rotate(45deg);
+        }
+        
+        .content {
+            display: none;
+            margin-top: 40px;
+            animation: fadeIn 1.5s ease forwards;
+        }
+        
+        .gif-container {
+            margin: 30px auto;
+            max-width: 400px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            border: 5px solid #ff00ff;
+        }
+        
+        .gif-container img {
+            width: 100%;
+            display: block;
+        }
+        
+        .song-title {
+            color: white;
+            font-size: 2.5rem;
+            margin: 30px 0;
+            text-shadow: 0 0 10px #ff00ff;
+            animation: pulse 2s infinite;
+        }
+        
+        .lyrics {
+            color: #00ffff;
+            font-size: 1.8rem;
+            margin-top: 20px;
+            font-style: italic;
+            text-shadow: 0 0 5px #00ffff;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            animation: fall linear forwards;
+            z-index: 1;
+        }
+        
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        footer {
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 30px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .trust-button { font-size: 1.8rem; padding: 20px 50px; }
+            .song-title { font-size: 2rem; }
+            .lyrics { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Click The Button Below</h1>
+        <button class="trust-button">TRUST ME</button>
+        
+        <div class="content">
+            <div class="gif-container">
+                <img src="https://media.giphy.com/media/Vuw9m5wXviFIQ/giphy.gif" alt="Rick Astley Dancing">
+            </div>
+            <div class="song-title">Never Gonna Give You Up</div>
+            <div class="lyrics">Never gonna let you down...</div>
+        </div>
+    </div>
+    
+    <footer>You've been Rickrolled! 😄</footer>
+    
+    <audio id="rickroll-audio" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const button = document.querySelector('.trust-button');
+            const content = document.querySelector('.content');
+            const audio = document.getElementById('rickroll-audio');
+            const container = document.querySelector('.container');
+            
+            button.addEventListener('click', function() {
+                // Hide the button
+                button.style.display = 'none';
+                
+                // Show the content
+                content.style.display = 'block';
+                
+                // Play the audio
+                audio.play();
+                
+                // Create confetti effect
+                createConfetti();
+                
+                // Change the title
+                document.querySelector('h1').textContent = "You've Been Rickrolled!";
+            });
+            
+            function createConfetti() {
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+                
+                for (let i = 0; i < 300; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = Math.random() * 15 + 5 + 'px';
+                    confetti.style.height = confetti.style.width;
+                    confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                    
+                    document.body.appendChild(confetti);
+                    
+                    // Remove confetti after animation completes
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
