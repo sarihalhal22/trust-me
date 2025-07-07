@@ -11,12 +11,11 @@ document.getElementById("trustBtn").addEventListener("click", function () {
     loading.classList.add("hidden");
     surprise.classList.remove("hidden");
 
-    // Play audio and catch any errors (most browsers require user interaction)
+    // Ensure audio plays after user gesture
+    music.muted = false;
     music.play().catch((error) => {
       console.warn("Audio play prevented:", error);
+      alert("Tap the screen again to hear the music 🎵");
     });
   }, 2500);
 });
-
-
-
