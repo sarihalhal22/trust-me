@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Message Board</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+        }
+        
+        /* Video background styling */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .video-background video {
+            min-width: 100%;
+            min-height: 100%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            opacity: 0.7;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.8) 100%);
+        }
+        
+        /* Main content styling */
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            z-index: 10;
+            position: relative;
+        }
+        
+        .message-board {
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 700px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 3px solid #ff00ff;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            color: #fff;
+            text-align: center;
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            color: #ccc;
+            text-align: center;
+            font-size: 1.4rem;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        #message-input {
+            flex: 1;
+            padding: 20px;
+            border-radius: 50px;
+            border: 2px solid #00ffff;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 1.2rem;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        
+        #message-input:focus {
+            border-color: #ff00ff;
+            box-shadow: 0 0 20px #ff00ff;
+        }
+        
+        #message-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        #submit-btn {
+            background: linear-gradient(45deg, #ff00cc, #3333ff);
+            color: white;
+            border: none;
+            padding: 0 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        #submit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #ff00ff;
+            background: linear-gradient(45deg, #ff00cc, #00ffff);
+        }
+        
+        .instructions {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            color: #ccc;
+            border: 2px solid #00ffff;
+        }
+        
+        .instructions h2 {
+            color: #ff00ff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 5px #ff00ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .instructions li {
+            margin-bottom: 12px;
+            line-height: 1.6;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .instructions li::before {
+            content: "•";
+            color: #00ffff;
+            font-size: 1.5rem;
+        }
+        
+        .messages-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .message {
+            position: absolute;
+            max-width: 250px;
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+            cursor: pointer;
+            word-wrap: break-word;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .message:hover {
+            transform: scale(1.1) rotate(3deg);
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        footer {
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            margin-top: 30px;
+            font-size: 1.1rem;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            width: 100%;
+        }
+        
+        @media (max-width: 768px) {
+            .message-board {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .input-container {
+                flex-direction: column;
+            }
+            
+            #submit-btn {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Background -->
+    <div class="video-background">
+        <video autoplay loop muted playsinline>
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-1610-large.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <div class="message-board">
+            <h1><i class="fas fa-comments"></i> Interactive Message Board</h1>
+            <p class="subtitle">Type a message and watch it appear randomly on the screen! Click on messages to remove them.</p>
+            
+            <div class="input-container">
+                <input type="text" id="message-input" placeholder="Type your message here..." autocomplete="off">
+                <button id="submit-btn">
+                    <i class="fas fa-paper-plane"></i> Post
+                </button>
+            </div>
+            
+            <div class="instructions">
+                <h2><i class="fas fa-info-circle"></i> How It Works</h2>
+                <ul>
+                    <li>Type your message in the input box above</li>
+                    <li>Click "Post" or press Enter to submit</li>
+                    <li>Your message will appear randomly on the screen</li>
+                    <li>Messages appear with random colors, sizes, and rotations</li>
+                    <li>Click any message to remove it from the screen</li>
+                    <li>Try dragging messages around after you post them!</li>
+                </ul>
+            </div>
+        </div>
+        
+        <footer>
+            Created with ❤️ | Share with friends to collaborate on the message board!
+        </footer>
+    </div>
+    
+    <!-- Container for floating messages -->
+    <div class="messages-container" id="messages-container"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageInput = document.getElementById('message-input');
+            const submitBtn = document.getElementById('submit-btn');
+            const messagesContainer = document.getElementById('messages-container');
+            
+            // Available colors for messages
+            const messageColors = [
+                'rgba(255, 105, 180, 0.85)',  // Hot pink
+                'rgba(0, 255, 255, 0.85)',    // Cyan
+                'rgba(144, 238, 144, 0.85)',  // Light green
+                'rgba(255, 215, 0, 0.85)',    // Gold
+                'rgba(221, 160, 221, 0.85)',  // Plum
+                'rgba(100, 149, 237, 0.85)',  // Cornflower blue
+                'rgba(255, 165, 0, 0.85)',    // Orange
+                'rgba(152, 251, 152, 0.85)'   // Pale green
+            ];
+            
+            // Message posting
+            submitBtn.addEventListener('click', postMessage);
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    postMessage();
+                }
+            });
+            
+            function postMessage() {
+                const messageText = messageInput.value.trim();
+                
+                if (!messageText) {
+                    // Add shake animation to input
+                    messageInput.style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        messageInput.style.animation = '';
+                    }, 500);
+                    return;
+                }
+                
+                createMessage(messageText);
+                messageInput.value = '';
+                messageInput.focus();
+            }
+            
+            function createMessage(text) {
+                const message = document.createElement('div');
+                message.className = 'message';
+                message.textContent = text;
+                message.style.color = 'white';
+                
+                // Random styles
+                const colorIndex = Math.floor(Math.random() * messageColors.length);
+                message.style.backgroundColor = messageColors[colorIndex];
+                message.style.fontSize = `${Math.random() * 20 + 20}px`;
+                message.style.transform = `rotate(${Math.random() * 20 - 10}deg)`;
+                
+                // Random position (with boundary checks)
+                const maxX = window.innerWidth - 300;
+                const maxY = window.innerHeight - 200;
+                const posX = Math.max(20, Math.floor(Math.random() * maxX));
+                const posY = Math.max(20, Math.floor(Math.random() * maxY));
+                
+                message.style.left = `${posX}px`;
+                message.style.top = `${posY}px`;
+                
+                // Add drag functionality
+                makeElementDraggable(message);
+                
+                // Add click to remove
+                message.addEventListener('click', function() {
+                    message.style.animation = 'fadeOut 0.5s forwards';
+                    setTimeout(() => {
+                        message.remove();
+                    }, 500);
+                });
+                
+                // Add to container
+                messagesContainer.appendChild(message);
+                
+                // Add fadeOut animation to styles
+                const styleSheet = document.styleSheets[0];
+                styleSheet.insertRule(`
+                    @keyframes fadeOut {
+                        from { opacity: 1; transform: scale(1); }
+                        to { opacity: 0; transform: scale(0.5); }
+                    }
+                `, styleSheet.cssRules.length);
+                
+                // Add shake animation for input
+                styleSheet.insertRule(`
+                    @keyframes shake {
+                        0%, 100% { transform: translateX(0); }
+                        20%, 60% { transform: translateX(-10px); }
+                        40%, 80% { transform: translateX(10px); }
+                    }
+                `, styleSheet.cssRules.length);
+            }
+            
+            // Make elements draggable
+            function makeElementDraggable(element) {
+                let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+                
+                element.addEventListener('mousedown', dragMouseDown);
+                
+                function dragMouseDown(e) {
+                    e.preventDefault();
+                    // Bring to front
+                    element.style.zIndex = "1000";
+                    // Get mouse position
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    document.addEventListener('mouseup', closeDragElement);
+                    document.addEventListener('mousemove', elementDrag);
+                }
+                
+                function elementDrag(e) {
+                    e.preventDefault();
+                    // Calculate new position
+                    pos1 = pos3 - e.clientX;
+                    pos2 = pos4 - e.clientY;
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    // Set new position
+                    element.style.top = `${element.offsetTop - pos2}px`;
+                    element.style.left = `${element.offsetLeft - pos1}px`;
+                }
+                
+                function closeDragElement() {
+                    // Stop moving when mouse button is released
+                    document.removeEventListener('mouseup', closeDragElement);
+                    document.removeEventListener('mousemove', elementDrag);
+                    // Return to normal z-index after a delay
+                    setTimeout(() => {
+                        element.style.zIndex = "";
+                    }, 100);
+                }
+            }
+            
+            // Add some initial messages for demonstration
+            setTimeout(() => {
+                createMessage('Welcome! 👋');
+                createMessage('Drag me around!');
+                createMessage('Try adding your own message!');
+                createMessage('Click to remove ✖️');
+                createMessage('Awesome! 😎');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
